@@ -126,6 +126,13 @@ function throttle(func, wait, options) {
     this.dragRange = this.range && attributes.rzSliderDraggableRange === 'true';
 
     /**
+     * Whether to allow the bubble to be draggable
+     *
+     * @type {boolean} Set to true for draggable range slider
+     */
+    this.dragBubble = attributes.rzSliderBubbleDraggable === 'true';
+
+    /**
      * Values recorded when first dragging the bar
      *
      * @type {Object}
@@ -633,8 +640,13 @@ function throttle(func, wait, options) {
         this.selBar.css('cursor', 'move');
         this.selBar.addClass('rz-draggable');
       }
+
+      // If set bubble to be draggable will add pointer cursor.
+      if(this.dragBubble) {
+        this.minLab[0].style.cursor = 'pointer';
+      }
     },
-    
+
     /**
      * Adds accessibility atributes
      *
@@ -1106,6 +1118,7 @@ function throttle(func, wait, options) {
       }
 
       this.minH.on('mousedown', angular.bind(this, this.onStart, this.minH, 'rzSliderModel'));
+      if(this.dragBubble) this.minLab.on('mousedown', angular.bind(this, this.onStart, this.minLab, 'rzSliderModel'));
       if(this.range) { this.maxH.on('mousedown', angular.bind(this, this.onStart, this.maxH, 'rzSliderHigh')); }
       this.fullBar.on('mousedown', angular.bind(this, this.onStart, null, null));
       this.fullBar.on('mousedown', angular.bind(this, this.onMove, this.fullBar));
@@ -1115,6 +1128,7 @@ function throttle(func, wait, options) {
       this.ticks.on('mousedown', angular.bind(this, this.onMove, this.ticks));
 
       this.minH.on('touchstart', angular.bind(this, this.onStart, this.minH, 'rzSliderModel'));
+      if(this.dragBubble) this.minLab.on('touchstart', angular.bind(this, this.onStart, this.minLab, 'rzSliderModel'));
       if(this.range) { this.maxH.on('touchstart', angular.bind(this, this.onStart, this.maxH, 'rzSliderHigh')); }
       this.fullBar.on('touchstart', angular.bind(this, this.onStart, null, null));
       this.fullBar.on('touchstart', angular.bind(this, this.onMove, this.fullBar));
@@ -1426,6 +1440,7 @@ function throttle(func, wait, options) {
       rzSliderShowTicksValue: '=?',
       rzSliderDisabled: '=?',
       rzSliderInterval: '=?',
+      rzSliderBubbleDraggable: '=?',
     },
 
     /**
