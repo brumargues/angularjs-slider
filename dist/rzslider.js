@@ -76,7 +76,7 @@ function throttle(func, wait, options) {
   };
 })
 
-.factory('RzSlider', ['$timeout', '$document', '$window', 'throttle', function($timeout, $document, $window, throttle)
+.factory('RzSlider', function($timeout, $document, $window, throttle)
 {
   'use strict';
 
@@ -124,6 +124,13 @@ function throttle(func, wait, options) {
      * @type {boolean} Set to true for draggable range slider
      */
     this.dragRange = this.range && attributes.rzSliderDraggableRange === 'true';
+
+    /**
+     * Whether to allow the bubble to be draggable
+     *
+     * @type {boolean} Set to true for draggable range slider
+     */
+    this.dragBubble = attributes.rzSliderBubbleDraggable === 'true';
 
     /**
      * Values recorded when first dragging the bar
@@ -633,8 +640,13 @@ function throttle(func, wait, options) {
         this.selBar.css('cursor', 'move');
         this.selBar.addClass('rz-draggable');
       }
+
+      // If set bubble to be draggable will add pointer cursor.
+      if(this.dragBubble) {
+        this.minLab[0].style.cursor = 'pointer';
+      }
     },
-    
+
     /**
      * Adds accessibility atributes
      *
@@ -1106,6 +1118,7 @@ function throttle(func, wait, options) {
       }
 
       this.minH.on('mousedown', angular.bind(this, this.onStart, this.minH, 'rzSliderModel'));
+      if(this.dragBubble) this.minLab.on('mousedown', angular.bind(this, this.onStart, this.minLab, 'rzSliderModel'));
       if(this.range) { this.maxH.on('mousedown', angular.bind(this, this.onStart, this.maxH, 'rzSliderHigh')); }
       this.fullBar.on('mousedown', angular.bind(this, this.onStart, null, null));
       this.fullBar.on('mousedown', angular.bind(this, this.onMove, this.fullBar));
@@ -1115,6 +1128,7 @@ function throttle(func, wait, options) {
       this.ticks.on('mousedown', angular.bind(this, this.onMove, this.ticks));
 
       this.minH.on('touchstart', angular.bind(this, this.onStart, this.minH, 'rzSliderModel'));
+      if(this.dragBubble) this.minLab.on('touchstart', angular.bind(this, this.onStart, this.minLab, 'rzSliderModel'));
       if(this.range) { this.maxH.on('touchstart', angular.bind(this, this.onStart, this.maxH, 'rzSliderHigh')); }
       this.fullBar.on('touchstart', angular.bind(this, this.onStart, null, null));
       this.fullBar.on('touchstart', angular.bind(this, this.onMove, this.fullBar));
@@ -1399,9 +1413,9 @@ function throttle(func, wait, options) {
   };
 
   return Slider;
-}])
+})
 
-.directive('rzslider', ['RzSlider', function(RzSlider)
+.directive('rzslider', function(RzSlider)
 {
   'use strict';
 
@@ -1426,6 +1440,7 @@ function throttle(func, wait, options) {
       rzSliderShowTicksValue: '=?',
       rzSliderDisabled: '=?',
       rzSliderInterval: '=?',
+      rzSliderBubbleDraggable: '=?',
     },
 
     /**
@@ -1445,7 +1460,7 @@ function throttle(func, wait, options) {
       return new RzSlider(scope, elem, attr);
     }
   };
-}]);
+});
 
 // IDE assist
 
@@ -1480,14 +1495,7 @@ function throttle(func, wait, options) {
  * @property {boolean} trailing
  */
 
-  module.run(['$templateCache', function($templateCache) {
-  'use strict';
-
-  $templateCache.put('rzSliderTpl.html',
-    "<span class=rz-bar-wrapper><span class=rz-bar></span></span> <span class=rz-bar-wrapper><span class=\"rz-bar rz-selection\"></span></span> <span class=rz-pointer></span> <span class=rz-pointer></span> <span class=\"rz-bubble rz-limit\"></span> <span class=\"rz-bubble rz-limit\"></span> <span class=rz-bubble></span> <span class=rz-bubble></span> <span class=rz-bubble></span><ul class=rz-ticks></ul>"
-  );
-
-}]);
+  /*templateReplacement*/
 
   return module
 }));
